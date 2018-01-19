@@ -8,7 +8,7 @@
 
 # Base image
 FROM mxabierto/ckan:ed4df9e73f1d28cfa90712dabb0f8b604180ef93
-#FROM mxabierto/ckan:v2.0.5
+#FROM mxabierto/ckan:2.5.3
 MAINTAINER Francisco Vaquero <francisco@opi.la>
 
 ENV DATAPUSHER_HOME /usr/lib/ckan/datapusher
