@@ -7,8 +7,9 @@
 #   docker run --rm -itP mxabierto/ckan
 
 # Base image
-FROM mxabierto/ckan:ed4df9e73f1d28cfa90712dabb0f8b604180ef93
-#FROM mxabierto/ckan:2.5.3
+# FROM mxabierto/ckan:ed4df9e73f1d28cfa90712dabb0f8b604180ef93
+FROM mxabierto/ckan:2.5-8-patch
+# FROM mxabierto/ckan:2.7
 MAINTAINER Francisco Vaquero <francisco@opi.la>
 
 ENV DATAPUSHER_HOME /usr/lib/ckan/datapusher
@@ -28,9 +29,9 @@ ADD datapusher_settings.py /etc/ckan/datapusher_settings.py
 RUN cp /project/datapusher/deployment/datapusher.wsgi /etc/ckan/datapusher.wsgi
 
 # Apche's datapusher config
-RUN sudo sh -c 'echo "NameVirtualHost *:8800" >> /etc/apache2/ports.conf'
-RUN sudo sh -c 'echo "Listen 8800" >> /etc/apache2/ports.conf'
-RUN sudo a2ensite datapusher
+RUN echo "NameVirtualHost *:8800" >> /etc/apache2/ports.conf
+RUN echo "Listen 8800" >> /etc/apache2/ports.conf
+RUN a2ensite datapusher
 
 EXPOSE 8800
 
@@ -39,9 +40,11 @@ EXPOSE 8800
 # $CKAN_HOME/bin/pip install -e git+https:repo
 RUN apt-get update && apt-get install -y supervisor cron
 ADD ckan_default.conf /etc/apache2/sites-available/ckan_default.conf
+RUN a2ensite ckan_default
 
 RUN \
   virtualenv $CKAN_HOME && \
+  $CKAN_HOME/bin/pip install -U setuptools==31.0.0 && \
   $CKAN_HOME/bin/pip install -e git+https://github.com/mxabierto/ckanext-dcat#egg=ckanext-dcat && \
   $CKAN_HOME/bin/pip install -r $CKAN_HOME/src/ckanext-dcat/requirements.txt && \
   $CKAN_HOME/bin/pip install -e git+https://github.com/mxabierto/ckanext-more-facets.git@develop#egg=ckanext-more-facets && \
