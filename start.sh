@@ -20,6 +20,7 @@ sed -i -e "s|ckan.harvest.mq.password = guest|ckan.harvest.mq.password = $RABBIT
 sed -i -e "s|ckan.harvest.mq.virtual_host = /|ckan.harvest.mq.virtual_host = $RABBIT_VHOST|" /project/development.ini
 
 sed -i -e "s|mxtheme.adela_api_endopint =|mxtheme.adela_api_endopint = $ADELA_ENDPOINT|" /project/development.ini
+sed -i -e "s|ckan.redis.url = redis://localhost:6379/0|ckan.redis.url = redis://$REDIS_IP:$REDIS_PORT/0|" /project/development.ini
 
 $CKAN_HOME/bin/paster --plugin=ckan datastore set-permissions -c /project/development.ini
 
@@ -47,17 +48,17 @@ if [ "$TEST_DATA" = true ]; then
   $CKAN_HOME/bin/paster --plugin=ckan create-test-data -c /project/development.ini echo "Llenando datos de prueba"
 fi
 
-# sudo touch /var/run/supervisor.sock
-# sudo chmod 777 /var/run/supervisor.sock
-# sudo service supervisor restart
+touch /var/run/supervisor.sock
+chmod 777 /var/run/supervisor.sock
+supervisord
 
-# sudo supervisorctl reread
-#sudo supervisorctl add ckan_gather_consumer
-#sudo supervisorctl add ckan_fetch_consumer
-#sudo supervisorctl add ckan_harvest
-#sudo supervisorctl start ckan_gather_consumer
-#sudo supervisorctl start ckan_fetch_consumer
-#sudo supervisorctl start ckan_harvest
+supervisorctl reread
+# supervisorctl add ckan_gather_consumer
+# supervisorctl add ckan_fetch_consumer
+# supervisorctl add ckan_harvest
+# supervisorctl start ckan_gather_consumer
+# supervisorctl start ckan_fetch_consumer
+# supervisorctl start ckan_harvest
 
 # Serve site
 service apache2 start
